@@ -1,0 +1,242 @@
+* {
+    margin: 0;
+    font-family: sans-serif;
+    max-width: 100%;
+}
+
+.login-register-page {
+    background-color: #262e40;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.login-register-page .feedback {
+    color: white;
+
+    @media (max-width: 700px) {
+        margin: 0% 10%
+    }
+}
+
+.login-page {
+    background-color: white;
+    border-radius: 8px;
+    padding: 40px 30px;
+    width: 30%;
+    height: max-content;
+
+    @media (max-width: 700px) {
+        width: 60%;
+        padding: 40px 20px;
+    }
+}
+
+.login-page button {
+    background-color: #36416A;
+    color: white;
+    border-radius: 50px;
+    border: none;
+    padding: 8px 20px;
+    float: right;
+}
+
+.login-page img {
+    height: 15px;
+    width: 15px;
+    position: absolute;
+}
+
+.login-page p {
+    font-size: 12px;
+}
+
+.login-page .input {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+input {
+    border: none;
+    border-bottom: 1px solid #AAAAAA;
+    outline: none;
+    width: 85%;
+}
+.have-acc{
+    color:#737373
+}
+
+/* Main page */
+.navbar {
+    background-color: #36416A;
+    color: white;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2%;
+}
+
+button {
+    background-color: #36416A;
+    color: white;
+    border: none;
+    padding: 8px 13px;
+    border-radius: 50px;
+}
+
+.navbar .btn-signup {
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 6px 11px
+}
+
+.navbar .log-out-btns {
+    display: flex;
+}
+
+.navbar button {
+    font-size: medium;
+}
+
+.banner {
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 3% 14% ;
+    @media (max-width: 700px) {
+        flex-direction: column;
+        padding: 0
+    }
+}
+
+.banner img {
+    width: 80%;
+    height: 50%;
+    @media (max-width: 700px) {
+        width: 100%
+    }    
+}
+
+.banner h1 {
+    line-height: 1.5;
+    @media (max-width: 700px) {
+        line-height: 1;
+        font-size: medium;
+    }
+}
+
+.banner p {
+    line-height: 2;
+    @media (max-width: 700px) {
+        line-height: 1;
+        font-size: small;
+    }
+}
+
+.banner .feedback-part {
+    @media (max-width: 700px) {
+        width: 90%;
+        line-height: 1;
+    }
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 3%
+}
+
+.footer .apply-filter {
+    background-color: #36416A;
+    padding: 4% 5% 2% 2%;
+    color: white;
+    border-radius: 8px;
+
+    @media (max-width: 700px) {
+        display: none;
+    }
+}
+
+.footer .add-product-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid #5f6783;
+    border-radius: 6px;
+    width: 70vw;
+    padding: 1%;
+    @media (max-width: 700px) {
+        width: 95vh;
+        margin-top: 7%;
+    }
+}
+
+.footer .add-product-box .sort{
+    display: inline-flex;
+    width: 30%;
+    justify-content: space-between;
+    @media (max-width: 700px) {
+        width: 53%;
+    }
+}
+
+.pop-up-background {
+    position: fixed;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height:100%;
+    /* background-color: rgb(0, 0, 0); */
+    background-color: rgba(0, 0, 0, 0.6);
+}
+.pop-up{
+    display: flex;
+    justify-content: space-between;
+    @media(max-width:700px){
+        width: 70vh;
+        justify-content: center;
+    }
+}
+.feedback-form{
+    background-color: #36416A;
+    width:30%;
+    color:white;
+    padding:10%;
+    @media (max-width: 700px) {
+       display: none;
+    }
+}
+.feedback-form p{
+    line-height: 2;
+}
+.form-fr-add-product{
+    background-color: white;
+    width:40%;
+    padding:8%;
+    @media (max-width: 700px) {
+        padding: 11% 8% 11% 10%;
+        border-radius: 10px;
+    }
+}
+.form-fr-add-product p{
+    font-size: 12px;
+}
+
+.form-fr-add-product img{
+    width:7%;
+    height:7%
+}
+.heading{
+    @media (max-width: 700px) {
+       display: none;
+    }
+}
