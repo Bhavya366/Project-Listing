@@ -1,4 +1,4 @@
-.job-card {
+.product-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -28,7 +28,7 @@
     width:18px;
     height:18px
 }
-.job-img {
+.product-img {
     width: 30px;
     height: 30px;
     margin-right: 1rem;
@@ -38,48 +38,9 @@
     width: 100%;
 } */
 
-.ps {
-    margin-right: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.job-type {
-    justify-content: flex-start;
-}
-.job-title{
-    color: #36416A;
-}
-
 .card-right {
     width: 50%;
     flex-direction: column;
-}
-
-.req-skills {
-    flex-direction: row;
-    width: 100%;
-    justify-content: flex-end;
-}
-
-.req-skill {
-    background-color: #FFEEEE;
-    padding: 0.3rem 1rem;
-    margin-left: 1rem;
-}
-
-
-.view {
-    width: 100%;
-    justify-content: flex-end;
-}
-
-.view-details {
-    background-color: #ED5353;
-    color: white;
-    padding: 0.5rem 1.5rem;
-    border: none;
 }
 
 

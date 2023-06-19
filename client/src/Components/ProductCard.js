@@ -5,16 +5,16 @@ import comment from '../Images/comment.png'
 const ProductCard = () => {
     const skills = ['hi','bye','bye','hii']
     return (
-                <div className="job-card selected-card">
+                <div className="product-card selected-card">
                     <div className="card-left"> 
-                        <div className="job-img">
+                        <div className="product-img">
                             <img alt="" src=""/>
                         </div>
-                        <div className="job-des">
-                            <div className="job-title">
+                        <div className="product-des">
+                            <div className="product-title">
                                 <h2>hiihhihi</h2>
                             </div>
-                            <div className="Product-decription">
+                            <div className="product-decription">
                                 nkfbibmdfk
                             </div>
                             <div className='comment-section'>
