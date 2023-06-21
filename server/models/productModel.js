@@ -25,6 +25,13 @@ const ProductSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
+    upvote:{
+        type:Number,
+        required:true,
+    },
+    comments:{
+        type:[String],
+    },
     date: {
         type: Date,
         default: Date.now

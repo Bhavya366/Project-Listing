@@ -8,13 +8,18 @@ const bcrypt = require("bcrypt");
 
 const connectDB = require("./database");
 const errorHandler = require("./middleware/errorHandling");
-const { isAuthenticated } = require("./middleware/auth");
+// const { isAuthenticated } = require("./middleware/auth");
 const User = require("./models/userModel");
 const Product = require('./models/productModel')
 dotenv.config();
 
 // middleware
-app.use(cors());
+const corsOptions ={
+    origin:'http://localhost:3000', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('./public'))
@@ -31,6 +36,18 @@ app.get('/health-api', (req, res) => {
     res.json(response);
 });
 
+const isAuthenticated = async(req, res, next) => {
+    console.log()
+    const token = req.headers.token;
+    console.log(token)
+    try {
+        const verify = await jwt.verify(token, process.env.JWT_SECRET_KEY);
+    } catch(e) {
+        return res.json({error: "Sign In First", err: e})
+        
+    }
+    next();
+}
 // Route: /register
 app.post('/register', async (req, res) => {
     try {
@@ -86,13 +103,13 @@ app.post('/login', async (req, res) => {
         const { email, password } = req.body;
         //validation
         if (!(email && password)) {
-            res.status(400).send("Something is missing")
+            return res.status(400).send("Something is missing")
         }
         //find user in DB
         const user = await User.findOne({ email })
         //If user is not their
         if (!user) {
-            res.status(401).send({ message: "User not exists" })
+            return res.status(401).send({ message: "User not exists" })
         }
         //match the password
         if (user && (await bcrypt.compare(password, user.password))) {
@@ -115,8 +132,6 @@ app.post('/login', async (req, res) => {
                 user
             })
         }
-
-
     }
     catch (error) {
         console.log("Error Occured", error)
@@ -124,34 +139,123 @@ app.post('/login', async (req, res) => {
 })
 
 //Route: /add-product
-app.post('/add-product', async (req, res) => {
-    
+app.post('/add-product',isAuthenticated, async (req, res) => {
     try {
-        const { nameofthecompany,category,addlogourl,linkofproduct,adddescription ,date } = req.body;
-
-        if (nameofthecompany && category && addlogourl && linkofproduct && adddescription) {
+        let { nameofthecompany,category,addlogourl,linkofproduct,adddescription ,upvote ,date} = req.body;
+        if(!upvote)
+        upvote = 0
+        category = category.split(',');
+        if (nameofthecompany && category && addlogourl && linkofproduct && adddescription && upvote>=0) {
             const product = await Product.create({
                 nameofthecompany,
                 category,
                 addlogourl,
                 linkofproduct,
                 adddescription,
+                upvote,
                 date,
             });
             return res.status(200).json({ message: 'Product added successfully',product:product });
         }
         else{
             return res.status(400).json({ 
-                field:addlogourl,
+                field:upvote,
                 message: "Missing required fields",
             });
         }
-        
     } 
     catch (err) {
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: 'Internal server error'+err, });
     }
 })
+
+// Route: /get-product based on user selected categories
+app.get('/',async(req,res,next)=>{
+    let categories = req.query.category;
+    let sort = '-'+req.query.sort;
+    let search = req.query.search || "";
+    try{
+        const Products = await Product.find();
+        let product="";
+        if(categories === "All"){
+            product = Products;
+        }
+        else{
+        product = await Product.find({ category: { $regex: search, $options: "i" } })
+        .where('category')
+        .in(categories)
+        .sort(sort)
+        }
+      res.send({
+        status: "SUCCESS",
+        message: "Product fetched successfully",
+        product:product,
+      })
+    }
+    catch(err){
+      next(new Error("Something went wrong! Please try after some time."));
+    }
+  })
+
+//Route get-all categories
+app.get('/get-all-categories',async(req,res,next)=>{
+    try{
+        const Products = await Product.find();
+        const all_categories = Products.flatMap(product => product.category);
+        unique = [...new Set(all_categories)]
+
+      res.send({
+        status: "SUCCESS",
+        message: "Product fetched successfully",
+        categories:unique,
+      })
+    }
+    catch(err){
+      next(new Error("Something went wrong! Please try after some time."));
+    }
+})
+
+//Route to post comment into database
+app.post('/comment', async(req, res)=>{
+    const {nameofthecompany, comment} = req.body;
+    if(!nameofthecompany || !comment)
+    return res.json({error: 'please fill all details'})
+    try {
+        const found_it = await Product.findOneAndUpdate({nameofthecompany}, {$push: {comments: comment}}, {
+            new: true
+        })
+        res.json(found_it)
+    } catch(e) {
+        res.json({
+            error: e,
+        })
+    }
+})
+
+app.post('/upvote', async(req, res)=>{
+    const {nameofthecompany} = req.body;
+    if(!nameofthecompany)
+    return res.json({error: 'please fill all details'})
+    try {
+        const check = await Product.findOne({nameofthecompany});
+        if(check==null || check==undefined) return res.json({error: "company doesn't exist in the database"}) 
+        if(check.upvote!=null) {
+        const found_it = await Product.findOneAndUpdate({nameofthecompany}, {$inc: {upvote: 1}}, {
+            new: true
+        })
+        return res.json({upVotes: found_it.upvote})
+        }
+        const found_it = await Product.findOneAndUpdate({nameofthecompany},  {upvote: 0}, {
+            new: true
+        })
+        return res.json({upvote: found_it.upvote})
+    } catch(e) {
+        res.json({
+            error: e,
+        })
+    }
+})
+
 
 // Connect to MongoDB
 connectDB();
@@ -163,7 +267,7 @@ app.listen(process.env.PORT, () =>
 
 //Error handling middlewares
 app.all('*',(req,res,next)=>{  
-    const err = new Error('Something went wrong! Please try after some time.');
+    const err = new Error('Something went wrong! Please try after some time');
     err.status = 'fail';
     err.statusCode = 404;
     next(err);

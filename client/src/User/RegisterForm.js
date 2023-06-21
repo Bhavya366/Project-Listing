@@ -7,12 +7,13 @@ import { useForm } from "react-hook-form"
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loginpopup from '../Components/Loginpopup';
+import LoginForm from './LoginForm';
 
-const RegisterForm = ({ setUser,setAuth}) => {
-
+const RegisterForm = ({ setUser,setAuth,popUp}) => {
+    
     const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm()
-    const [,Navigate,setNavigate] = useState(false);
+    const [clicked,setClicked]  = useState(false)
     const onSubmit = (data) => {
         axios
             .post("http://localhost:4500/register", data)
@@ -50,6 +51,7 @@ const RegisterForm = ({ setUser,setAuth}) => {
                 <Link to='/login'>Log in</Link></p><br></br>
                 <button>Sign Up</button>
             </form>
+            {popUp&&clicked ? <Loginpopup popUp={popUp} />:navigate('/')}
         </div>
     );
 };

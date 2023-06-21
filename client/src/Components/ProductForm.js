@@ -9,8 +9,12 @@ const RegisterForm = ({ setUser, setAuth }) => {
     const { register, handleSubmit, formState: { errors } } = useForm()
     
     const onSubmit = (data) => {
+        data.upvote = 0
+        const headers = {token : JSON.parse(localStorage.getItem('token'))}
         axios
-          .post("http://localhost:4500/add-product",data)
+          .post("http://localhost:4500/add-product",data, {
+            headers: headers
+          })
           .then((res) => {
             navigate('/')
           })
