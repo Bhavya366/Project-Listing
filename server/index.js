@@ -237,18 +237,18 @@ app.post('/upvote', async(req, res)=>{
     if(!nameofthecompany)
     return res.json({error: 'please fill all details'})
     try {
-        const check = await Product.findOne({nameofthecompany});
-        if(check==null || check==undefined) return res.json({error: "company doesn't exist in the database"}) 
-        if(check.upvote!=null) {
-        const found_it = await Product.findOneAndUpdate({nameofthecompany}, {$inc: {upvote: 1}}, {
+        const check_company = await Product.findOne({nameofthecompany});
+        if(check_company==null || check_company==undefined) return res.json({error: "company doesn't exist in the database"}) 
+        if(check_company.upvote!=null) {
+        const have_company = await Product.findOneAndUpdate({nameofthecompany}, {$inc: {upvote: 1}}, {
             new: true
         })
-        return res.json({upVotes: found_it.upvote})
+        return res.json({upVotes: have_company.upvote})
         }
-        const found_it = await Product.findOneAndUpdate({nameofthecompany},  {upvote: 0}, {
+        const have_company = await Product.findOneAndUpdate({nameofthecompany},  {upvote: 0}, {
             new: true
         })
-        return res.json({upvote: found_it.upvote})
+        return res.json({upvote: have_company.upvote})
     } catch(e) {
         res.json({
             error: e,

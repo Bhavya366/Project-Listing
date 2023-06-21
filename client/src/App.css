@@ -79,6 +79,9 @@ input {
     align-items: center;
     justify-content: space-between;
     padding: 2%;
+    @media (max-width: 700px) {
+        width:100%
+    }
 }
 
 button {

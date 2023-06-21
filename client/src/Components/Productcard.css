@@ -1,7 +1,10 @@
 .footer {
     display: flex;
     justify-content: space-between;
-    padding: 3%
+    padding: 3%;
+    @media (max-width: 700px) {
+        flex-direction: column;
+    }
 }
 
 .apply-filter {
@@ -26,14 +29,20 @@
 }
 
 .footer .categories-list {
-    width: 22%
+    width: 22%;
+    @media (max-width: 700px) {
+        width:100%;
+    }
 }
 
 .categories-box {
     padding: 5%;
     background: #FFFFFF;
     box-shadow: 0px 0px 17.5051px rgba(0, 0, 0, 0.15);
-    border-radius: 11.px;
+    border-radius: 11px;
+    @media (max-width: 700px) {
+       box-shadow: none;
+    }
 }
 
 .categories-box .category-btn {
@@ -61,7 +70,6 @@
     width: 40%;
     align-items: center;
     justify-content: space-between;
-
     @media (max-width: 700px) {
         width: 53%;
     }
@@ -82,9 +90,17 @@
 .product-card {
     background-color: rgba(54, 65, 106, 0.15);
     border-radius: 4px;
-    width: 100%;
+    max-width: 90%;
     margin-bottom: 1rem;
     padding: 1rem;
+}
+.product-des{
+    line-height: 2;
+}
+.product-img img{
+    height:50px;
+    width:100px;
+    border-radius: 50%;
 }
 
 .product-card .product-details {
@@ -148,4 +164,52 @@
     width: 40px;
     text-align: center;
     margin-bottom: 20px;
+}
+
+.input-box-with-img{
+    background: #FFFFFF;
+    border: 3px solid #C7CBD6;
+    border-radius: 43px;
+    margin: 0% 1%;
+}
+.input_box{
+    display: flex;
+    padding:0% 1%;
+}
+.input_box input{
+    width:100%;
+    border: none;
+    border-radius: 50px;
+}
+.commentsend-btn{
+    border: none;
+    background-color: white;
+}
+.input_box img{
+    width:20px ;
+    height:20px
+}
+
+.scrollable-div {
+        margin:4px, 4px;
+        padding:4%;
+        height: 60px;
+        overflow-x: hidden;
+        overflow-y: auto;
+}
+.each-comment-scrollable{
+    display: flex;
+    color: #999999;
+    font-size: 14px;
+}
+.each-comment-scrollable span{
+    background-color: #36416A;
+    border-radius: 50%;
+    height:15px;
+    width:30px;
+    margin-right: 3%;
+    @media (max-width: 700px) {
+        height:1rem;
+    width:3rem;
+    }
 }
