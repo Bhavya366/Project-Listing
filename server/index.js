@@ -14,10 +14,10 @@ const Product = require('./models/productModel')
 dotenv.config();
 
 // middleware
-const corsOptions ={
-    origin:'http://localhost:3000', 
-    credentials:true,            //access-control-allow-credentials:true
-    optionSuccessStatus:200
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,            //access-control-allow-credentials:true
+    optionSuccessStatus: 200
 }
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -36,15 +36,13 @@ app.get('/health-api', (req, res) => {
     res.json(response);
 });
 
-const isAuthenticated = async(req, res, next) => {
-    console.log()
+const isAuthenticated = async (req, res, next) => {
     const token = req.headers.token;
-    console.log(token)
     try {
         const verify = await jwt.verify(token, process.env.JWT_SECRET_KEY);
-    } catch(e) {
-        return res.json({error: "Sign In First", err: e})
-        
+    } catch (e) {
+        return res.json({ error: "Sign In First", err: e })
+
     }
     next();
 }
@@ -132,20 +130,24 @@ app.post('/login', async (req, res) => {
                 user
             })
         }
+        else {
+            res.send({ error: "Please enter correct details" })
+        }
     }
     catch (error) {
-        console.log("Error Occured", error)
+        res.send({ errors: "Please fill details correctly" })
     }
 })
 
 //Route: /add-product
-app.post('/add-product',isAuthenticated, async (req, res) => {
+app.post('/add-product', isAuthenticated, async (req, res) => {
     try {
-        let { nameofthecompany,category,addlogourl,linkofproduct,adddescription ,upvote ,date} = req.body;
-        if(!upvote)
-        upvote = 0
+        let { nameofthecompany, category, addlogourl, linkofproduct, adddescription, upvote, date } = req.body;
+        console.log(nameofthecompany)
+        if (!upvote)
+            upvote = 0
         category = category.split(',');
-        if (nameofthecompany && category && addlogourl && linkofproduct && adddescription && upvote>=0) {
+        if (nameofthecompany && category && addlogourl && linkofproduct && adddescription && upvote >= 0) {
             const product = await Product.create({
                 nameofthecompany,
                 category,
@@ -155,107 +157,143 @@ app.post('/add-product',isAuthenticated, async (req, res) => {
                 upvote,
                 date,
             });
-            return res.status(200).json({ message: 'Product added successfully',product:product });
+            console.log(product)
+            return res.status(200).json({ message: 'Product added successfully', product: product });
         }
-        else{
-            return res.status(400).json({ 
-                field:upvote,
+        else {
+            return res.status(400).json({
+                field: upvote,
                 message: "Missing required fields",
             });
         }
-    } 
+    }
     catch (err) {
-        return res.status(500).json({ message: 'Internal server error'+err, });
+        return res.status(500).json({ message: 'Internal server error' + err, });
     }
 })
 
 // Route: /get-product based on user selected categories
-app.get('/',async(req,res,next)=>{
+app.get('/', async (req, res, next) => {
     let categories = req.query.category;
-    let sort = '-'+req.query.sort;
+    let sort = req.query.sort;
+    console.log(sort)
     let search = req.query.search || "";
-    try{
-        const Products = await Product.find();
-        let product="";
-        if(categories === "All"){
+    try {
+        let Products = await Product.find();
+        let product = "";
+        if (categories === "All" && sort==undefined) {
             product = Products;
         }
-        else{
-        product = await Product.find({ category: { $regex: search, $options: "i" } })
-        .where('category')
-        .in(categories)
-        .sort(sort)
+        else if(categories === "All" && sort){
+            
+            product = (await Product.find().sort(sort)).reverse();
         }
-      res.send({
-        status: "SUCCESS",
-        message: "Product fetched successfully",
-        product:product,
-      })
+        else {
+            if (sort == null) {
+                product = await Product.find({ category: { $regex: search, $options: "i" } })
+                    .where('category')
+                    .in(categories)
+            }
+            else{
+                product = (await Product.find({ category: { $regex: search, $options: "i" } })
+                .where('category')
+                .in(categories).sort(sort)).reverse()
+            }
+            
+        }
+        res.send({
+            status: "SUCCESS",
+            message: "Product fetched successfully",
+            product: product,
+        })
     }
-    catch(err){
-      next(new Error("Something went wrong! Please try after some time."));
+    catch (err) {
+        next(new Error("Something went wrong! Please try after some time."));
     }
-  })
+})
 
 //Route get-all categories
-app.get('/get-all-categories',async(req,res,next)=>{
-    try{
+app.get('/get-all-categories', async (req, res, next) => {
+    try {
         const Products = await Product.find();
         const all_categories = Products.flatMap(product => product.category);
         unique = [...new Set(all_categories)]
 
-      res.send({
-        status: "SUCCESS",
-        message: "Product fetched successfully",
-        categories:unique,
-      })
+        res.send({
+            status: "SUCCESS",
+            message: "Product fetched successfully",
+            categories: unique,
+        })
     }
-    catch(err){
-      next(new Error("Something went wrong! Please try after some time."));
+    catch (err) {
+        next(new Error("Something went wrong! Please try after some time."));
     }
 })
 
 //Route to post comment into database
-app.post('/comment', async(req, res)=>{
-    const {nameofthecompany, comment} = req.body;
-    if(!nameofthecompany || !comment)
-    return res.json({error: 'please fill all details'})
+app.post('/comment', async (req, res) => {
+    const { nameofthecompany, comment } = req.body;
+    if (!nameofthecompany || !comment)
+        return res.json({ error: 'please fill all details' })
     try {
-        const found_it = await Product.findOneAndUpdate({nameofthecompany}, {$push: {comments: comment}}, {
+        const found_it = await Product.findOneAndUpdate({ nameofthecompany }, { $push: { comments: comment } }, {
             new: true
         })
         res.json(found_it)
-    } catch(e) {
+    } catch (e) {
         res.json({
             error: e,
         })
     }
 })
 
-app.post('/upvote', async(req, res)=>{
-    const {nameofthecompany} = req.body;
-    if(!nameofthecompany)
-    return res.json({error: 'please fill all details'})
+app.put('/upvote', async (req, res) => {
+    const {nameofthecompany,upvote} = req.body;
+    try{
+        const updated = await Product.findOne({nameofthecompany:nameofthecompany})
+        updated.upvote = upvote;
+        const updatedProduct = await updated.save();
+        return res.json({ upvote: upvote,message:"Updated successfully" })
+    } catch (err) {
+        res.json({
+            error: err,
+        })
+    }
+})
+app.put('/update-product',isAuthenticated,async (req, res) => {
     try {
-        const check_company = await Product.findOne({nameofthecompany});
-        if(check_company==null || check_company==undefined) return res.json({error: "company doesn't exist in the database"}) 
-        if(check_company.upvote!=null) {
-        const have_company = await Product.findOneAndUpdate({nameofthecompany}, {$inc: {upvote: 1}}, {
-            new: true
+
+        const {  nameofthecompany,category, addlogourl ,linkofproduct, adddescription ,id} = req.body;
+        
+        const product = await Product.findOne({ _id: id });
+        console.log(product)
+        if (product) {
+            
+            product.nameofthecompany = nameofthecompany || product.nameofthecompany;
+            product.addlogourl = addlogourl || product.addlogourl;
+            product.category = category || product.category;
+            product.linkofproduct = linkofproduct || product.linkofproduct;
+            product.adddescription = adddescription || product.adddescription;
+            const updatedproduct = await product.save();
+            return res.status(200).json({
+            // message: 'product updated successfully',
+            u:1,
+            data: updatedproduct,
+            error: null
         })
-        return res.json({upVotes: have_company.upvote})
+        } else {
+            return res.status(401).json({
+                message: 'Not found!',
+            })
         }
-        const have_company = await Product.findOneAndUpdate({nameofthecompany},  {upvote: 0}, {
-            new: true
-        })
-        return res.json({upvote: have_company.upvote})
-    } catch(e) {
-        res.json({
-            error: e,
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            message: 'Internal server error',
+            error: error
         })
     }
 })
-
 
 // Connect to MongoDB
 connectDB();
@@ -266,17 +304,17 @@ app.listen(process.env.PORT, () =>
 )
 
 //Error handling middlewares
-app.all('*',(req,res,next)=>{  
+app.all('*', (req, res, next) => {
     const err = new Error('Something went wrong! Please try after some time');
     err.status = 'fail';
     err.statusCode = 404;
     next(err);
 })
-app.use((error,req,res,next)=>{
+app.use((error, req, res, next) => {
     error.statusCode = error.statusCode || 500;
     error.status = error.status || 500;
     res.status(error.statusCode).json({
-        status:error.statusCode,
-        message:error.message
+        status: error.statusCode,
+        message: error.message
     })
 })

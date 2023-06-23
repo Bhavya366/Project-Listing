@@ -6,30 +6,39 @@ import mobile from '../Images/mobile.png';
 import { useForm } from "react-hook-form"
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Loginpopup from '../Components/Loginpopup';
 import LoginForm from './LoginForm';
+import { useContext } from 'react';
+import { MyContext } from '../MyContext';
 
-const RegisterForm = ({ setUser,setAuth,popUp}) => {
+const RegisterForm = (props) => {
     
+    const { text, loggedIn,setText,setLoggedIn, show,setShow} = useContext(MyContext)
     const navigate = useNavigate();
+    const [error,setError] = useState("")
     const { register, handleSubmit, formState: { errors } } = useForm()
-    const [clicked,setClicked]  = useState(false)
+    
+
     const onSubmit = (data) => {
         axios
             .post("http://localhost:4500/register", data)
             .then((res) => {
-                setAuth(true)
-                setUser(res.data.user.name)
+                
                 localStorage.setItem('token', JSON.stringify(res.data.token));
+                setLoggedIn(true)
+                setText(false)
                 navigate('/')
+                
             })
             .catch((error) => {
+                if(error.response.data)
+                setError("*"+error.response.data)
                 console.log("Error:", error);
             });
     };
     
     return (
         <div>
+            
             <form onSubmit={handleSubmit(onSubmit)} >
                 <div className='input'>
                     <img src={name} alt="" />&nbsp;
@@ -41,17 +50,28 @@ const RegisterForm = ({ setUser,setAuth,popUp}) => {
                 </div><br></br>
                 <div className='input'>
                     <img src={mobile} alt="" />&nbsp;
-                    <input {...register("mobile")} type="text" placeholder='Mobile' required />
+                    <input {...register("mobile")} type="tel" placeholder='Mobile' required />
                 </div><br></br>
                 <div className='input'>
                     <img src={password} alt="" />&nbsp;
                     <input {...register("password")} type="password" placeholder='Password' required />
                 </div><br></br>
-                <p className='have-acc'>Already have an account?&nbsp;
-                <Link to='/login'>Log in</Link></p><br></br>
+                {(props.para)&&(
+                    <p>Already have an account ?  <input type='button' style={{background:'none' , border:'none'}} value ='Sign In' onClick = {()=>setShow(true)}e /> </p>
+                )
+
+                }
+
+                {!(props.para)&&(
+              
+                         <p className='have-acc'>Already have an account?&nbsp; <Link to='/login'>Log in</Link></p>)
+
+                }<br></br>
+                
+                {error?<p className='error'>{error}</p>:""}
+
                 <button>Sign Up</button>
             </form>
-            {popUp&&clicked ? <Loginpopup popUp={popUp} />:navigate('/')}
         </div>
     );
 };

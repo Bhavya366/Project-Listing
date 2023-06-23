@@ -1,15 +1,21 @@
 import { React, useState } from 'react';
 import './Productcard.css'
-import comment from '../Images/comment.png'
-import sortbycomments from '../Images/sortbycomments.png'
-import commentsend from '../Images/commentsend.png'
+import comment from '../../Images/comment.png'
+import sortbycomments from '../../Images/sortbycomments.png'
+import commentsend from '../../Images/commentsend.png'
 import axios from 'axios';
+import ModalBody from '../ModalBody';
+import ProductForm from './ProductForm';
+import FeedbackProduct from '../FeedbackProduct';
 
-const ProductCard = ({ product }) => {
-
+const ProductCard = ({ product,isAuthenticated }) => {
+    
+    const [upvotes,setUpvotes] = useState(product.upvote);
+    const [comments,setComments] = useState(product.comments);
+    const [edit,setEdit] = useState(false)
+    
     const [show, setShow] = useState(false);
-
-    const addComment = (id) => {
+    const addComment = () => {
         setShow(true)
     }
     const storeComment = (event, nameofthecompany) => {
@@ -18,11 +24,11 @@ const ProductCard = ({ product }) => {
             nameofthecompany: nameofthecompany,
             comment: event.target[0].value,
         }
-        axios.post('http://localhost:4500/comment', data)
-            .then((res) => console.log(res))
-            .catch((err) => { console.log(err) })
+        axios.post('http://localhost:4500/comment',data)
+        .then((res)=>{console.log(res.data)})
+        .catch((err)=>{console.log(err)})
     }
-
+    
     return (
         <div className="product-card selected-card">
             <div className='product-details'>
@@ -38,21 +44,31 @@ const ProductCard = ({ product }) => {
                             <p>{product.adddescription}</p>
                         </div>
                         <div className='comment-section'>
-                            {product.category.map((eachCategory, index) => {
-
+                            <div style={{display:"flex"}}>
+                                {product.category.map((eachCategory, index) => {
                                 return (<span key={index} className='product-card-category'>{eachCategory}</span>)
                             })} &nbsp;&nbsp;
-                            <img src={comment} alt="" />&nbsp;
-                            <p className='comment-btn' onClick={() => addComment()}>Comment</p>
+                            <div className='comment-btn-section'>
+                                <img src={comment} alt="" />&nbsp;
+                                <p className='comment-btn' onClick={() => addComment()}>Comment</p>
+                            </div>
+                        </div>
+                        <div>{isAuthenticated? <button className='edit-btn' onClick={()=>{setEdit(true)}}>Edit</button>:""}</div>
                         </div>
                     </div>
                 </div>
                 <div className="card-right">
                     <div className='upvote-count'>
-                        ^<br></br>{product.upvote}
+                        <button onClick={()=>{
+                            setUpvotes(upvotes=>upvotes+1)
+                            axios.put('http://localhost:4500/upvote',{
+                                nameofthecompany:product.nameofthecompany,
+                                upvote:upvotes,
+                        }).then((res)=>{product.upvote = res.data.upvote})
+                    }}>^<br></br>{product.upvote}</button>
                     </div>
                     <div className='comments-count'>
-                        <span>{product.comments.length}</span> <img src={sortbycomments} alt="" />
+                        <span>{product.comments.length}</span>&nbsp;<img src={sortbycomments} alt="" />
                     </div>
                 </div>
             </div><br></br>
@@ -75,9 +91,18 @@ const ProductCard = ({ product }) => {
                                 <p>{eachComment}</p>
                             </div>
                         )
-                        
                     })}<br></br>
-                    </div> : ""}</div> : ""}
+            </div> : ""}</div> : ""}
+            {edit?<div className='pop-up-background'>
+                    <div  className='pop-up' >
+                            <div className='form-fr-add-product'>
+                                <ProductForm id={product._id} />
+                            </div>
+                            <div className='feedback-form'>
+                                <FeedbackProduct />
+                            </div>
+                    </div>
+                </div>:"" }
         </div>
     );
 };
