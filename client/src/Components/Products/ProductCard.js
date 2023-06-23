@@ -20,12 +20,17 @@ const ProductCard = ({ product,isAuthenticated }) => {
     }
     const storeComment = (event, nameofthecompany) => {
         event.preventDefault();
+        var oldComments = comments
+        var newComments = event.target[0].value;
+        oldComments.unshift(newComments);
+
+        console.log(oldComments);
         const data = {
             nameofthecompany: nameofthecompany,
             comment: event.target[0].value,
         }
-        axios.post('http://localhost:4500/comment',data)
-        .then((res)=>{console.log(res.data)})
+        axios.put('http://localhost:4500/comment',data)
+        .then((res)=>{setComments(res.data.comments)})
         .catch((err)=>{console.log(err)})
     }
     
@@ -84,7 +89,7 @@ const ProductCard = ({ product,isAuthenticated }) => {
                 : ""}<br></br>
             {show && product.comments ? <div>
                 {product.comments ?
-                    <div className='scrollable-div'>{product.comments.map((eachComment, index) => {
+                    <div className='scrollable-div'>{comments.map((eachComment, index) => {
                         return (
                             <div className='each-comment-scrollable' key={index}>
                                 <span className='dot'></span>

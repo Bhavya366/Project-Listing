@@ -20,19 +20,20 @@ const LoginForm = ({setAuth,show}) => {
     axios
       .post("http://localhost:4500/login",data)
       .then((res)=>{
-        setAuth(true);
+        // setAuth(true);
         if(res.data.error)
         setError("*"+res.data.error)
         // localStorage.setItem('isLoggedIn',true)
-        localStorage.setItem('token',JSON.stringify(res.data.token));
-        setText(false)
-        setLoggedIn(true)
-        navigate('/')
+        else{
+          localStorage.setItem('token',JSON.stringify(res.data.token));
+          setText(false)
+          setLoggedIn(true)
+          navigate('/')
+        }        
         }
       )
       .catch((err) => {
-        console.log("Error",err.response.data.message)
-        setError("*"+err.response.data.message)
+        console.log("error",err)
       });
   };
   return (
@@ -47,7 +48,7 @@ const LoginForm = ({setAuth,show}) => {
           <img src={password} alt="" />&nbsp;
           <input {...register("password")} type="password" placeholder='Password' required />
         </div><br></br>
-        {text?"":<div><p className='have-acc'>Don’t have an account?&nbsp;<Link to={'/register'} >Sign Up</Link></p><br></br></div>}
+        <div><p className='have-acc'>Don’t have an account?&nbsp;<Link to={'/register'} >Sign Up</Link></p><br></br></div>
         {error && error.length>0?<p className='error'>{error}</p>:""}<br></br>
         <button>Login</button>        
       </form>

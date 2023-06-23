@@ -13,6 +13,5 @@ const isAuthenticated = (req)=>{
     }
     next();
 }
-
   
 module.exports = { isAuthenticated};

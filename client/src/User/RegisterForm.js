@@ -57,15 +57,13 @@ const RegisterForm = (props) => {
                     <input {...register("password")} type="password" placeholder='Password' required />
                 </div><br></br>
                 {(props.para)&&(
-                    <p>Already have an account ?  <input type='button' style={{background:'none' , border:'none'}} value ='Sign In' onClick = {()=>setShow(true)}e /> </p>
+                    <p>Already have an account ?  <input type='button' style={{background:'none' , border:'none'}} value ='Sign In' onClick = {()=>setShow(true)} /> </p>
                 )
 
                 }
 
                 {!(props.para)&&(
-              
                          <p className='have-acc'>Already have an account?&nbsp; <Link to='/login'>Log in</Link></p>)
-
                 }<br></br>
                 
                 {error?<p className='error'>{error}</p>:""}

@@ -231,7 +231,7 @@ app.get('/get-all-categories', async (req, res, next) => {
 })
 
 //Route to post comment into database
-app.post('/comment', async (req, res) => {
+app.put('/comment', async (req, res) => {
     const { nameofthecompany, comment } = req.body;
     if (!nameofthecompany || !comment)
         return res.json({ error: 'please fill all details' })

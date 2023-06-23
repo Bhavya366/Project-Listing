@@ -27,7 +27,7 @@ const ModalBody = ({id}) => {
                                 
                               )}
                                {
-                                (show) &&  (
+                                (!loggedIn && show) &&  (
                                     <LoginForm />
                                 )
                               }
